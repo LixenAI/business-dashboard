@@ -4,17 +4,19 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Geist Sans - Variable Font from CDN */
 @font-face {
   font-family: 'Geist';
-  src: url('/fonts/Geist-Variable.woff2') format('woff2');
+  src: url('https://cdn.jsdelivr.net/npm/geist@1.2.0/dist/fonts/geist-sans/Geist-Variable.woff2') format('woff2');
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;
 }
 
+/* JetBrains Mono - Variable Font from CDN */
 @font-face {
   font-family: 'JetBrains Mono';
-  src: url('/fonts/jetbrains-mono-latin-wght-normal.woff2') format('woff2');
+  src: url('https://cdn.jsdelivr.net/npm/@fontsource-variable/jetbrains-mono@5.1.0/files/jetbrains-mono-latin-wght-normal.woff2') format('woff2');
   font-weight: 100 800;
   font-style: normal;
   font-display: swap;
