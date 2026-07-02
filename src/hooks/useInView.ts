@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, type RefObject } from "react";
+import { useState, useEffect, useRef, type RefObject } from 'react';
 
 export function useInView<T extends HTMLElement = HTMLDivElement>(
   options?: IntersectionObserverInit
