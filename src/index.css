@@ -1,0 +1,145 @@
+@import "tailwindcss";
+
+@plugin "tailwindcss-animate";
+
+@custom-variant dark (&:is(.dark *));
+
+/* Geist Sans - Variable Font from CDN */
+@font-face {
+  font-family: 'Geist';
+  src: url('https://cdn.jsdelivr.net/npm/geist@1.2.0/dist/fonts/geist-sans/Geist-Variable.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* JetBrains Mono - Variable Font from CDN */
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('https://cdn.jsdelivr.net/npm/@fontsource-variable/jetbrains-mono@5.1.0/files/jetbrains-mono-latin-wght-normal.woff2') format('woff2');
+  font-weight: 100 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme {
+  --font-sans: 'Geist', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  /* LixenAI Brand Colors */
+  --color-slate-1: #060E1A;
+  --color-slate-2: #0B1D35;
+  --color-slate-3: #0F2647;
+  --color-slate-4: #152E50;
+  --color-slate-5: #1A3358;
+  --color-slate-6: #234470;
+  --color-slate-7: #2E5688;
+  --color-slate-8: #3D6FA0;
+  --color-slate-9: #1A6FD4;
+  --color-slate-10: #3B8AE6;
+  --color-slate-11: #7B8DA8;
+  --color-slate-12: #F0F4FA;
+
+  --color-blue-1: #061E3A;
+  --color-blue-2: #0A2D5A;
+  --color-blue-3: #0C2D5A;
+  --color-blue-4: #0E3A6E;
+  --color-blue-5: #1A4A82;
+  --color-blue-6: #1A5C9E;
+  --color-blue-7: #1A6EB8;
+  --color-blue-8: #1A6FD4;
+  --color-blue-9: #1A6FD4;
+  --color-blue-10: #3B8AE6;
+  --color-blue-11: #5BB8FF;
+  --color-blue-12: #A8D8FF;
+
+  --color-green-1: #052B20;
+  --color-green-2: #063828;
+  --color-green-3: #084535;
+  --color-green-4: #0A5240;
+  --color-green-5: #0D624E;
+  --color-green-6: #11755C;
+  --color-green-7: #178A6E;
+  --color-green-8: #1EA281;
+  --color-green-9: #2DD4A8;
+  --color-green-10: #47E0B8;
+  --color-green-11: #7AEBCC;
+  --color-green-12: #B2F5E0;
+
+  --color-red-1: #3A1010;
+  --color-red-2: #4A1515;
+  --color-red-3: #5C1A1A;
+  --color-red-4: #6E2020;
+  --color-red-5: #822828;
+  --color-red-6: #9E3333;
+  --color-red-7: #B84040;
+  --color-red-8: #D45252;
+  --color-red-9: #EF4444;
+  --color-red-10: #F56565;
+  --color-red-11: #FC8181;
+  --color-red-12: #FEB2B2;
+
+  --color-yellow-1: #3A2E10;
+  --color-yellow-2: #4A3A15;
+  --color-yellow-3: #5C481A;
+  --color-yellow-4: #6E5620;
+  --color-yellow-5: #826728;
+  --color-yellow-6: #9E7B33;
+  --color-yellow-7: #B89240;
+  --color-yellow-8: #D4A852;
+  --color-yellow-9: #F59E0B;
+  --color-yellow-10: #F6B83D;
+  --color-yellow-11: #F8D06B;
+  --color-yellow-12: #FBE29B;
+
+  --radius: 0.625rem;
+}
+
+/* Base styles */
+* {
+  border-color: var(--color-slate-6);
+}
+
+body {
+  background-color: var(--color-slate-1);
+  color: var(--color-slate-12);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-slate-6);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-slate-7);
+}
+
+/* Range input styling */
+input[type="range"] {
+  accent-color: var(--color-blue-9);
+}
+
+/* Selection */
+::selection {
+  background-color: var(--color-blue-9);
+  color: white;
+}
+
+/* Focus styles */
+:focus-visible {
+  outline: 2px solid var(--color-blue-9);
+  outline-offset: 2px;
+}
