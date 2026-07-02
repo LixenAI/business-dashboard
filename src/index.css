@@ -143,8 +143,3 @@ input[type="range"] {
   outline: 2px solid var(--color-blue-9);
   outline-offset: 2px;
 }
-
-/* Animate accent bar for range inputs */
-input[type="range"]::-webkit-slider-thumb {
-  background-color: var(--color-blue-9);
-}
