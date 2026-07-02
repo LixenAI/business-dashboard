@@ -1,15 +1,18 @@
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { useState } from 'react';
+import { motion } from 'framer-motion';
 import {
-  DollarSign,
-  Users,
-  Hammer,
   TrendingUp,
+  TrendingDown,
+  Users,
+  DollarSign,
+  Activity,
+  Target,
   ArrowUpRight,
   ArrowDownRight,
-  Activity,
-  CircleDot,
-} from "lucide-react";
+  BarChart3,
+  PieChart as PieChartIcon,
+  Calendar,
+} from 'lucide-react';
 import {
   AreaChart,
   Area,
@@ -18,319 +21,243 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  BarChart,
+  Bar,
   PieChart,
   Pie,
   Cell,
-} from "recharts";
+} from 'recharts';
 
-// ─── KPI Data ───
-const kpiData = [
-  {
-    label: "Monthly Recurring Revenue",
-    value: "$12,450",
-    change: "+12.5%",
-    up: true,
-    icon: DollarSign,
-    color: "#1A6FD4",
-  },
-  {
-    label: "Active Partners",
-    value: "24",
-    change: "+4",
-    up: true,
-    icon: Users,
-    color: "#2DD4A8",
-  },
-  {
-    label: "Build Progress",
-    value: "68%",
-    change: "+8%",
-    up: true,
-    icon: Hammer,
-    color: "#5BB8FF",
-  },
-  {
-    label: "Avg. Operating Cost",
-    value: "$3,200",
-    change: "-5.2%",
-    up: true,
-    icon: TrendingUp,
-    color: "#F59E0B",
-  },
-];
+/* ── Animation variants ── */
+const container = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.05 } } };
+const item = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { duration: 0.4 } } };
 
-// ─── Revenue Chart Data ───
+/* ── Mock data ── */
 const revenueData = [
-  { month: "Jan", revenue: 8400 },
-  { month: "Feb", revenue: 9200 },
-  { month: "Mar", revenue: 10100 },
-  { month: "Apr", revenue: 9800 },
-  { month: "May", revenue: 11200 },
-  { month: "Jun", revenue: 12450 },
+  { month: 'Jan', revenue: 4200, target: 5000 },
+  { month: 'Feb', revenue: 3800, target: 5000 },
+  { month: 'Mar', revenue: 5500, target: 5000 },
+  { month: 'Apr', revenue: 6200, target: 6000 },
+  { month: 'May', revenue: 7100, target: 6000 },
+  { month: 'Jun', revenue: 8900, target: 7000 },
 ];
 
-// ─── Partner Distribution ───
-const partnerDist = [
-  { name: "Dental", value: 10, color: "#1A6FD4" },
-  { name: "Medical", value: 7, color: "#2DD4A8" },
-  { name: "Med Spa", value: 4, color: "#5BB8FF" },
-  { name: "Other", value: 3, color: "#F59E0B" },
+const partnerGrowth = [
+  { month: 'Jan', partners: 2 },
+  { month: 'Feb', partners: 3 },
+  { month: 'Mar', partners: 5 },
+  { month: 'Apr', partners: 7 },
+  { month: 'May', partners: 9 },
+  { month: 'Jun', partners: 12 },
 ];
 
-// ─── Phase Progress ───
-const phases = [
-  { name: "Phase 1", label: "Foundation", progress: 100 },
-  { name: "Phase 2", label: "Core Build", progress: 100 },
-  { name: "Phase 3", label: "Integration", progress: 85 },
-  { name: "Phase 4", label: "Testing", progress: 60 },
-  { name: "Phase 5", label: "Launch Prep", progress: 40 },
-  { name: "Phase 6", label: "Post-Launch", progress: 20 },
+const planDistribution = [
+  { name: 'Starter', value: 7, color: '#5BB8FF' },
+  { name: 'Growth', value: 5, color: '#1A6FD4' },
 ];
 
-// ─── Recent Activity ───
-const activities = [
-  { action: "New partner onboarded", detail: "Bright Dental Group signed up for Growth plan", time: "2 hours ago", type: "success" },
-  { action: "Build milestone reached", detail: "Phase 3 integration 85% complete", time: "5 hours ago", type: "info" },
-  { action: "Pricing update", detail: "Retail pricing calculator updated with new tiers", time: "1 day ago", type: "warning" },
-  { action: "Lead qualified", detail: "Park Orthodontics moved to Qualified stage", time: "1 day ago", type: "info" },
-  { action: "Contract signed", detail: "Sunrise Dental - 12 month commitment", time: "2 days ago", type: "success" },
+const verticalData = [
+  { name: 'Dental', leads: 24 },
+  { name: 'HVAC', leads: 18 },
+  { name: 'Plumbing', leads: 15 },
+  { name: 'Real Estate', leads: 12 },
+  { name: 'Insurance', leads: 10 },
+  { name: 'Legal', leads: 8 },
 ];
+
+/* ── Summary card component ── */
+function SummaryCard({
+  title,
+  value,
+  change,
+  changeType,
+  icon: Icon,
+  color,
+}: {
+  title: string;
+  value: string;
+  change: string;
+  changeType: 'up' | 'down' | 'neutral';
+  icon: React.ElementType;
+  color: string;
+}) {
+  return (
+    <motion.div
+      variants={item}
+      className="bg-surface rounded-xl p-5 border border-border-custom hover:border-border-light transition-all hover:shadow-[0_4px_16px_rgba(12,45,90,0.12)]"
+    >
+      <div className="flex items-center justify-between mb-3">
+        <span className="text-xs font-medium text-text-secondary uppercase tracking-wider">{title}</span>
+        <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${color}15` }}>
+          <Icon size={18} style={{ color }} />
+        </div>
+      </div>
+      <div className="text-2xl font-bold text-text-primary font-mono mb-1">{value}</div>
+      <div className={`flex items-center gap-1 text-xs ${changeType === 'up' ? 'text-success' : changeType === 'down' ? 'text-danger' : 'text-text-tertiary'}`}>
+        {changeType === 'up' ? <ArrowUpRight size={12} /> : changeType === 'down' ? <ArrowDownRight size={12} /> : null}
+        <span>{change}</span>
+      </div>
+    </motion.div>
+  );
+}
+
+/* ── Chart card wrapper ── */
+function ChartCard({ title, subtitle, icon: Icon, children }: { title: string; subtitle?: string; icon: React.ElementType; children: React.ReactNode }) {
+  return (
+    <motion.div variants={item} className="bg-surface rounded-xl border border-border-custom p-5">
+      <div className="flex items-center gap-2 mb-4">
+        <Icon size={16} className="text-soft-neon" />
+        <div>
+          <h3 className="text-sm font-semibold text-text-primary">{title}</h3>
+          {subtitle && <p className="text-xs text-text-secondary">{subtitle}</p>}
+        </div>
+      </div>
+      {children}
+    </motion.div>
+  );
+}
 
 export default function Home() {
-  const [hoveredKpi, setHoveredKpi] = useState<number | null>(null);
+  const [timeRange, setTimeRange] = useState('6M');
 
   return (
-    <div className="min-h-screen bg-slate-1 p-6 lg:p-8">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-12 mb-2">Dashboard Overview</h1>
-        <p className="text-slate-11">Real-time snapshot of your agency operations</p>
-      </div>
-
-      {/* KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
-        {kpiData.map((kpi, i) => {
-          const Icon = kpi.icon;
-          return (
-            <motion.div
-              key={kpi.label}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.1, duration: 0.4 }}
-              onMouseEnter={() => setHoveredKpi(i)}
-              onMouseLeave={() => setHoveredKpi(null)}
-              className={`bg-slate-3 border rounded-xl p-5 transition-colors duration-200 ${
-                hoveredKpi === i ? "border-blue-9/30" : "border-slate-6"
+    <motion.div variants={container} initial="hidden" animate="show" className="space-y-6">
+      {/* ── Header ── */}
+      <motion.div variants={item} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-[28px] font-bold text-text-primary tracking-[-0.02em]">Overview</h1>
+          <p className="text-sm text-text-secondary mt-0.5">LixenAI partner program performance and metrics</p>
+        </div>
+        <div className="flex items-center gap-2 bg-surface rounded-lg border border-border-custom p-1 w-fit">
+          {['1M', '3M', '6M', '1Y'].map((range) => (
+            <button
+              key={range}
+              onClick={() => setTimeRange(range)}
+              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                timeRange === range ? 'bg-primary-blue text-white' : 'text-text-secondary hover:text-text-primary'
               }`}
             >
-              <div className="flex items-center justify-between mb-3">
-                <div
-                  className="w-10 h-10 rounded-lg flex items-center justify-center"
-                  style={{ backgroundColor: `${kpi.color}15` }}
-                >
-                  <Icon className="w-5 h-5" style={{ color: kpi.color }} />
-                </div>
-                <div
-                  className={`flex items-center gap-1 text-xs font-medium ${
-                    kpi.up ? "text-green-10" : "text-red-10"
-                  }`}
-                >
-                  {kpi.up ? (
-                    <ArrowUpRight className="w-3.5 h-3.5" />
-                  ) : (
-                    <ArrowDownRight className="w-3.5 h-3.5" />
-                  )}
-                  {kpi.change}
-                </div>
-              </div>
-              <div className="text-2xl font-bold text-slate-12 mb-0.5">{kpi.value}</div>
-              <div className="text-xs text-slate-11">{kpi.label}</div>
-            </motion.div>
-          );
-        })}
+              {range}
+            </button>
+          ))}
+        </div>
+      </motion.div>
+
+      {/* ── Summary Cards ── */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <SummaryCard title="Total Partners" value="12" change="+3 this month" changeType="up" icon={Users} color="#1A6FD4" />
+        <SummaryCard title="Monthly Revenue" value="$8,900" change="+22% vs last month" changeType="up" icon={DollarSign} color="#4ADE80" />
+        <SummaryCard title="Active Leads" value="23" change="+5 new this week" changeType="up" icon={Target} color="#5BB8FF" />
+        <SummaryCard title="Avg. Partner Value" value="$741" change="-2% vs last month" changeType="down" icon={Activity} color="#FACC15" />
       </div>
 
-      {/* Charts Row */}
-      <div className="grid lg:grid-cols-3 gap-6 mb-8">
-        {/* Revenue Trend */}
-        <div className="lg:col-span-2 bg-slate-3 border border-slate-6 rounded-xl p-6">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-lg font-semibold text-slate-12">Revenue Trend</h2>
-              <p className="text-xs text-slate-11 mt-0.5">Monthly recurring revenue over time</p>
-            </div>
-            <div className="flex items-center gap-2 text-xs">
-              <span className="w-2 h-2 rounded-full bg-blue-9" />
-              <span className="text-slate-11">MRR</span>
-            </div>
-          </div>
+      {/* ── Charts Row 1 ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <ChartCard title="Revenue Trend" subtitle="Actual vs Target" icon={TrendingUp}>
           <ResponsiveContainer width="100%" height={240}>
             <AreaChart data={revenueData}>
               <defs>
-                <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#1A6FD4" stopOpacity={0.3} />
-                  <stop offset="100%" stopColor="#1A6FD4" stopOpacity={0} />
+                <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#1A6FD4" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#1A6FD4" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-              <XAxis dataKey="month" stroke="#7B8DA8" fontSize={12} tickLine={false} axisLine={false} />
-              <YAxis stroke="#7B8DA8" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(v) => `$${v / 1000}k`} />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: "#0B1D35",
-                  border: "1px solid #1A3358",
-                  borderRadius: "12px",
-                  fontSize: "12px",
-                }}
-                formatter={(value: number) => [`$${value.toLocaleString()}`, "MRR"]}
-              />
-              <Area
-                type="monotone"
-                dataKey="revenue"
-                stroke="#1A6FD4"
-                strokeWidth={2}
-                fill="url(#revenueGradient)"
-              />
+              <CartesianGrid strokeDasharray="3 3" stroke="#1A3358" />
+              <XAxis dataKey="month" tick={{ fill: '#7B93B5', fontSize: 12 }} axisLine={{ stroke: '#1A3358' }} />
+              <YAxis tick={{ fill: '#7B93B5', fontSize: 12 }} axisLine={{ stroke: '#1A3358' }} tickFormatter={(v) => `$${v/1000}k`} />
+              <Tooltip contentStyle={{ backgroundColor: '#0B1D35', border: '1px solid #1A3358', borderRadius: '8px', color: '#F0F4FA' }} />
+              <Area type="monotone" dataKey="revenue" stroke="#1A6FD4" fill="url(#revGrad)" strokeWidth={2} />
+              <Area type="monotone" dataKey="target" stroke="#5BB8FF" fill="transparent" strokeWidth={1.5} strokeDasharray="5 5" />
             </AreaChart>
           </ResponsiveContainer>
-        </div>
+        </ChartCard>
 
-        {/* Partner Distribution */}
-        <div className="bg-slate-3 border border-slate-6 rounded-xl p-6">
-          <h2 className="text-lg font-semibold text-slate-12 mb-1">Partners by Vertical</h2>
-          <p className="text-xs text-slate-11 mb-6">Distribution across verticals</p>
-          <ResponsiveContainer width="100%" height={200}>
-            <PieChart>
-              <Pie
-                data={partnerDist}
-                cx="50%"
-                cy="50%"
-                innerRadius={60}
-                outerRadius={80}
-                paddingAngle={4}
-                dataKey="value"
-              >
-                {partnerDist.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Pie>
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: "#0B1D35",
-                  border: "1px solid #1A3358",
-                  borderRadius: "12px",
-                  fontSize: "12px",
-                }}
-              />
-            </PieChart>
+        <ChartCard title="Partner Growth" subtitle="Cumulative enrollments" icon={Users}>
+          <ResponsiveContainer width="100%" height={240}>
+            <AreaChart data={partnerGrowth}>
+              <defs>
+                <linearGradient id="pgGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#4ADE80" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#4ADE80" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="#1A3358" />
+              <XAxis dataKey="month" tick={{ fill: '#7B93B5', fontSize: 12 }} axisLine={{ stroke: '#1A3358' }} />
+              <YAxis tick={{ fill: '#7B93B5', fontSize: 12 }} axisLine={{ stroke: '#1A3358' }} />
+              <Tooltip contentStyle={{ backgroundColor: '#0B1D35', border: '1px solid #1A3358', borderRadius: '8px', color: '#F0F4FA' }} />
+              <Area type="monotone" dataKey="partners" stroke="#4ADE80" fill="url(#pgGrad)" strokeWidth={2} />
+            </AreaChart>
           </ResponsiveContainer>
-          <div className="grid grid-cols-2 gap-2 mt-4">
-            {partnerDist.map((d) => (
-              <div key={d.name} className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full" style={{ backgroundColor: d.color }} />
-                <span className="text-xs text-slate-11">{d.name}</span>
-                <span className="text-xs text-slate-12 font-medium ml-auto">{d.value}</span>
+        </ChartCard>
+
+        <ChartCard title="Plan Distribution" subtitle="Starter vs Growth partners" icon={PieChartIcon}>
+          <div className="flex items-center justify-center">
+            <ResponsiveContainer width="100%" height={200}>
+              <PieChart>
+                <Pie data={planDistribution} cx="50%" cy="50%" innerRadius={50} outerRadius={80} paddingAngle={4} dataKey="value">
+                  {planDistribution.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip contentStyle={{ backgroundColor: '#0B1D35', border: '1px solid #1A3358', borderRadius: '8px', color: '#F0F4FA' }} />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="flex items-center justify-center gap-6 mt-2">
+            {planDistribution.map((p) => (
+              <div key={p.name} className="flex items-center gap-2">
+                <span className="w-3 h-3 rounded-full" style={{ backgroundColor: p.color }} />
+                <span className="text-xs text-text-secondary">{p.name}: <span className="font-semibold text-text-primary">{p.value}</span></span>
               </div>
             ))}
           </div>
-        </div>
+        </ChartCard>
       </div>
 
-      {/* Phase Progress */}
-      <div className="bg-slate-3 border border-slate-6 rounded-xl p-6 mb-8">
-        <h2 className="text-lg font-semibold text-slate-12 mb-4">Build Phase Progress</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-          {phases.map((phase, i) => (
-            <motion.div
-              key={phase.name}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: i * 0.08, duration: 0.3 }}
-              className="text-center"
-            >
-              <div className="relative w-16 h-16 mx-auto mb-2">
-                <svg className="w-16 h-16 -rotate-90" viewBox="0 0 64 64">
-                  <circle cx="32" cy="32" r="28" fill="none" stroke="#1A3358" strokeWidth="4" />
-                  <motion.circle
-                    cx="32" cy="32" r="28" fill="none" stroke="#1A6FD4"
-                    strokeWidth="4" strokeLinecap="round"
-                    strokeDasharray={`${2 * Math.PI * 28}`}
-                    initial={{ strokeDashoffset: 2 * Math.PI * 28 }}
-                    animate={{ strokeDashoffset: 2 * Math.PI * 28 * (1 - phase.progress / 100) }}
-                    transition={{ duration: 1, delay: i * 0.1 }}
-                  />
-                </svg>
-                <span className="absolute inset-0 flex items-center justify-center text-sm font-bold text-slate-12">
-                  {phase.progress}%
-                </span>
-              </div>
-              <p className="text-xs font-medium text-slate-12">{phase.name}</p>
-              <p className="text-[10px] text-slate-10">{phase.label}</p>
-            </motion.div>
-          ))}
-        </div>
-      </div>
+      {/* ── Charts Row 2 ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <ChartCard title="Leads by Vertical" subtitle="Top performing industries" icon={BarChart3}>
+          <ResponsiveContainer width="100%" height={260}>
+            <BarChart data={verticalData} layout="vertical">
+              <CartesianGrid strokeDasharray="3 3" stroke="#1A3358" />
+              <XAxis type="number" tick={{ fill: '#7B93B5', fontSize: 12 }} axisLine={{ stroke: '#1A3358' }} />
+              <YAxis dataKey="name" type="category" tick={{ fill: '#7B93B5', fontSize: 12 }} axisLine={{ stroke: '#1A3358' }} width={80} />
+              <Tooltip contentStyle={{ backgroundColor: '#0B1D35', border: '1px solid #1A3358', borderRadius: '8px', color: '#F0F4FA' }} />
+              <Bar dataKey="leads" fill="#1A6FD4" radius={[0, 4, 4, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </ChartCard>
 
-      {/* Bottom Row */}
-      <div className="grid lg:grid-cols-2 gap-6">
-        {/* Quick Stats */}
-        <div className="bg-slate-3 border border-slate-6 rounded-xl p-6">
-          <h2 className="text-lg font-semibold text-slate-12 mb-4">Quick Stats</h2>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-slate-4 rounded-lg p-4">
-              <p className="text-xs text-slate-11 mb-1">Avg. Partner LTV</p>
-              <p className="text-xl font-bold text-slate-12">$7,164</p>
-              <p className="text-xs text-green-10 mt-1">Based on 12-month avg</p>
-            </div>
-            <div className="bg-slate-4 rounded-lg p-4">
-              <p className="text-xs text-slate-11 mb-1">Churn Rate</p>
-              <p className="text-xl font-bold text-slate-12">3.2%</p>
-              <p className="text-xs text-green-10 mt-1">Below 5% target</p>
-            </div>
-            <div className="bg-slate-4 rounded-lg p-4">
-              <p className="text-xs text-slate-11 mb-1">Tasks Completed</p>
-              <p className="text-xl font-bold text-slate-12">1,247</p>
-              <p className="text-xs text-slate-10 mt-1">This month</p>
-            </div>
-            <div className="bg-slate-4 rounded-lg p-4">
-              <p className="text-xs text-slate-11 mb-1">Support Tickets</p>
-              <p className="text-xl font-bold text-slate-12">8</p>
-              <p className="text-xs text-slate-10 mt-1">3 new this week</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Activity Feed */}
-        <div className="bg-slate-3 border border-slate-6 rounded-xl p-6">
-          <h2 className="text-lg font-semibold text-slate-12 mb-4">Recent Activity</h2>
-          <div className="space-y-4">
-            {activities.map((activity, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.08 }}
-                className="flex items-start gap-3"
-              >
-                <div
-                  className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${
-                    activity.type === "success"
-                      ? "bg-green-9"
-                      : activity.type === "warning"
-                      ? "bg-yellow-9"
-                      : "bg-blue-9"
-                  }`}
-                />
-                <div className="min-w-0">
-                  <p className="text-sm text-slate-12 font-medium">{activity.action}</p>
-                  <p className="text-xs text-slate-11 truncate">{activity.detail}</p>
-                  <p className="text-[10px] text-slate-10 mt-0.5">{activity.time}</p>
+        <ChartCard title="Upcoming Milestones" subtitle="Key dates and deadlines" icon={Calendar}>
+          <div className="space-y-3">
+            {[
+              { date: 'Jul 15', title: 'Partner Onboarding — Sarah M.', type: 'Onboarding', status: 'upcoming' },
+              { date: 'Jul 18', title: 'Discovery Call — Premier Realty', type: 'Sales', status: 'upcoming' },
+              { date: 'Jul 22', title: 'Balance Due — 3 partners', type: 'Billing', status: 'warning' },
+              { date: 'Jul 30', title: 'Q2 Performance Review', type: 'Internal', status: 'upcoming' },
+              { date: 'Aug 5', title: '90-Day Check-In — David C.', type: 'Partner', status: 'upcoming' },
+            ].map((m, i) => (
+              <div key={i} className="flex items-center gap-3 p-3 rounded-lg bg-surface-elevated border border-border-custom">
+                <div className={`w-12 h-12 rounded-lg flex flex-col items-center justify-center shrink-0 ${
+                  m.status === 'warning' ? 'bg-[#FACC15]/10 text-[#FACC15]' : 'bg-[#1A6FD4]/10 text-[#5BB8FF]'
+                }`}>
+                  <span className="text-[10px] font-medium uppercase">{m.date.split(' ')[0]}</span>
+                  <span className="text-sm font-bold">{m.date.split(' ')[1]}</span>
                 </div>
-              </motion.div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-text-primary truncate">{m.title}</p>
+                  <span className={`text-xs px-2 py-0.5 rounded-full ${
+                    m.type === 'Onboarding' ? 'bg-[#4ADE80]/10 text-[#4ADE80]' :
+                    m.type === 'Sales' ? 'bg-[#1A6FD4]/10 text-[#5BB8FF]' :
+                    m.type === 'Billing' ? 'bg-[#FACC15]/10 text-[#FACC15]' :
+                    'bg-[#0F2440] text-text-secondary'
+                  }`}>{m.type}</span>
+                </div>
+              </div>
             ))}
           </div>
-        </div>
+        </ChartCard>
       </div>
-    </div>
+    </motion.div>
   );
 }
