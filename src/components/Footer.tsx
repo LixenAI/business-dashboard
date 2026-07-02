@@ -1,19 +1,9 @@
-import { cn } from "@/lib/utils";
-
-interface FooterProps {
-  className?: string;
-}
-
-export function Footer({ className }: FooterProps) {
+export default function Footer() {
   return (
-    <footer className={cn("border-t border-white/[0.06] py-6 px-8", className)}>
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-slate-11">
-          LixenAI Operations Dashboard
-        </p>
-        <p className="text-sm text-slate-11">
-          Internal Use Only
-        </p>
+    <footer className="py-4 px-6 border-t border-border-custom bg-[#060E1A]">
+      <div className="flex items-center justify-between text-text-tertiary text-xs">
+        <span className="font-geist">LixenAI Operations Dashboard</span>
+        <span className="font-mono bg-surface px-2 py-0.5 rounded-full">v1.0.0</span>
       </div>
     </footer>
   );
