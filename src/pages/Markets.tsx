@@ -1,260 +1,201 @@
-import { useState } from "react";
-import type { FC } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
+  Globe,
+  Building2,
   Stethoscope,
-  Heart,
-  Eye,
-  Bone,
-  Baby,
-  Sparkles,
-  Brain,
-  Activity,
-  Leaf,
-  Pill,
-  ClipboardList,
-  ChevronRight,
-  X,
+  Wrench,
+  Car,
+  Scale,
+  Home,
+  Shield,
   TrendingUp,
-  Users,
+  ChevronRight,
   Target,
-} from "lucide-react";
+  Users,
+  DollarSign,
+  CheckCircle2,
+  AlertCircle,
+} from 'lucide-react';
 
-// ─── Types ───
+/* ─── Vertical data ─── */
 interface Vertical {
   id: string;
   name: string;
-  icon: FC<{ className?: string }>;
+  icon: React.ElementType;
   color: string;
+  description: string;
   painPoints: string[];
-  talkingPoints: string[];
-  qualifyingQuestions: string[];
-  recommendedPlan: string;
-  estimatedDealSize: string;
+  aiUseCases: string[];
+  avgDealValue: number;
+  competition: 'Low' | 'Medium' | 'High';
   timeToClose: string;
-  hook: string;
+  recommendedPlan: string;
+  prospectingQuery: string;
+  roiPitch: string;
 }
 
-// ─── Verticals Data ───
 const verticals: Vertical[] = [
   {
-    id: "dental",
-    name: "Dental Practices",
+    id: 'dental',
+    name: 'Dental Practices',
     icon: Stethoscope,
-    color: "#1A6FD4",
-    painPoints: ["No-shows costing $500+/month", "Manual appointment scheduling", "Follow-up calls taking 2+ hrs/day", "Patient recall falling through cracks"],
-    talkingPoints: ["AI-powered scheduling reduces no-shows by 40%", "Automated recall sequences recover 25% of dormant patients", "Insurance verification automation saves 30 min/patient"],
-    qualifyingQuestions: ["How many locations do you operate?", "What's your current no-show rate?", "How do you handle patient recalls today?", "What PMS are you using?"],
-    recommendedPlan: "Growth ($497/mo)",
-    estimatedDealSize: "$5,964/year",
-    timeToClose: "2-3 weeks",
-    hook: "What if you could recover 25% of your dormant patients automatically?",
+    color: '#1A6FD4',
+    description: 'High patient volume, scheduling-heavy, review-sensitive. Perfect for AI receptionist + review automation.',
+    painPoints: ['Missed new patient calls', 'No-show rate 15-25%', 'Review generation difficult', 'Front desk overwhelmed'],
+    aiUseCases: ['24/7 AI phone answering', 'Automated appointment reminders', 'Review request after every visit', 'New patient intake automation'],
+    avgDealValue: 497,
+    competition: 'Medium',
+    timeToClose: '2-4 weeks',
+    recommendedPlan: 'Growth Plan',
+    prospectingQuery: 'dental practices [city] hiring receptionist OR front desk',
+    roiPitch: 'Save 10+ hours/week on scheduling. Reduce no-shows by 40%. Generate 20+ new reviews/month.',
   },
   {
-    id: "medical",
-    name: "Medical Practices",
-    icon: Heart,
-    color: "#2DD4A8",
-    painPoints: ["Overwhelmed front desk staff", "Missed appointment reminders", "Manual intake and paperwork", "Slow patient flow and long wait times"],
-    talkingPoints: ["Smart scheduling optimizes provider utilization by 30%", "Digital intake reduces check-in time by 60%", "Automated prep instructions improve compliance"],
-    qualifyingQuestions: ["How many providers in your practice?", "What's your average wait time?", "How do patients currently check in?", "What are your biggest front-desk pain points?"],
-    recommendedPlan: "Growth ($497/mo)",
-    estimatedDealSize: "$5,964/year",
-    timeToClose: "3-4 weeks",
-    hook: "How much revenue are you losing to scheduling gaps?",
+    id: 'hvac',
+    name: 'HVAC Services',
+    icon: Wrench,
+    color: '#FACC15',
+    description: 'Emergency-service driven, seasonal spikes, dispatch coordination. AI handles after-hours emergency calls.',
+    painPoints: ['After-hours emergency calls missed', 'Seasonal lead overflow', 'Dispatch coordination delays', 'Customer follow-up gaps'],
+    aiUseCases: ['Emergency call routing 24/7', 'Seasonal campaign automation', 'Service reminder sequences', 'Quote follow-up automation'],
+    avgDealValue: 497,
+    competition: 'Low',
+    timeToClose: '1-2 weeks',
+    recommendedPlan: 'Growth Plan',
+    prospectingQuery: 'HVAC companies [city] emergency service OR 24/7',
+    roiPitch: 'Never miss an emergency call again. Capture after-hours revenue. Automate seasonal tune-up reminders.',
   },
   {
-    id: "optometry",
-    name: "Optometry",
-    icon: Eye,
-    color: "#5BB8FF",
-    painPoints: ["Frame inventory management", "Annual exam recall challenges", "Insurance pre-authorization delays", "Contact lens reorder friction"],
-    talkingPoints: ["Automated annual recall drives 30% more exams", "Contact lens subscription boosts recurring revenue", "Insurance verification before visit reduces denials"],
-    qualifyingQuestions: ["Do you sell frames and contacts in-house?", "How do you handle annual recalls?", "What percentage of patients need insurance verification?"],
-    recommendedPlan: "Starter ($249/mo)",
-    estimatedDealSize: "$2,988/year",
-    timeToClose: "1-2 weeks",
-    hook: "What if your patients never missed their annual exam?",
+    id: 'medspa',
+    name: 'Medical Spas',
+    icon: Stethoscope,
+    color: '#5BB8FF',
+    description: 'Aesthetic-focused, consultation-heavy, high client LTV. AI booking + nurture drives repeat visits.',
+    painPoints: ['Consultation no-shows', 'Difficult to rebook inactive clients', 'High competition for new patients', 'Manual follow-up for treatments'],
+    aiUseCases: ['Consultation booking AI', 'Treatment series reminders', 'Inactive client reactivation', 'Before/after review collection'],
+    avgDealValue: 497,
+    competition: 'High',
+    timeToClose: '3-6 weeks',
+    recommendedPlan: 'Growth Plan',
+    prospectingQuery: 'med spa [city] botox OR fillers OR aesthetic',
+    roiPitch: 'Fill every consultation slot. Reactivate dormant clients automatically. Build a 5-star reputation.',
   },
   {
-    id: "orthopedics",
-    name: "Orthopedics",
-    icon: Bone,
-    color: "#F59E0B",
-    painPoints: ["Complex surgery scheduling", "Pre-op compliance tracking", "Post-op follow-up gaps", "Referral coordination"],
-    talkingPoints: ["Surgery scheduling with built-in pre-op checklists", "Automated post-op care sequences improve outcomes", "Referral loop tracking shows ROI to referrers"],
-    qualifyingQuestions: ["What types of procedures do you schedule most?", "How do you track pre-op compliance?", "What's your current referral process?"],
-    recommendedPlan: "Growth ($497/mo)",
-    estimatedDealSize: "$5,964/year",
-    timeToClose: "3-4 weeks",
-    hook: "How many hours does your team spend on surgery coordination?",
+    id: 'autorepair',
+    name: 'Auto Repair',
+    icon: Car,
+    color: '#F87171',
+    description: 'Trust-based, repeat-service industry. AI keeps customers coming back with maintenance reminders.',
+    painPoints: ['Customers forget maintenance', 'Price shoppers call around', 'No-shows for appointments', 'Poor online reputation'],
+    aiUseCases: ['Maintenance reminder automation', 'Service due predictions', 'Review generation', 'Price shopper nurture'],
+    avgDealValue: 397,
+    competition: 'Medium',
+    timeToClose: '2-3 weeks',
+    recommendedPlan: 'Starter Plan',
+    prospectingQuery: 'auto repair shop [city] OR mechanic [city] reviews',
+    roiPitch: 'Keep customers coming back with automated maintenance reminders. Generate reviews from every satisfied customer.',
   },
   {
-    id: "pediatrics",
-    name: "Pediatrics",
-    icon: Baby,
-    color: "#EC4899",
-    painPoints: ["Vaccination schedule tracking", "Parent communication overload", "Well-child visit adherence", "After-hours call volume"],
-    talkingPoints: ["Automated vaccination reminders ensure compliance", "Parent portal reduces phone calls by 40%", "Well-child visit sequences maintain continuity of care"],
-    qualifyingQuestions: ["What percentage of patients are under 18?", "How do you handle vaccination reminders?", "What's your after-hours call volume?"],
-    recommendedPlan: "Starter ($249/mo)",
-    estimatedDealSize: "$2,988/year",
-    timeToClose: "2-3 weeks",
-    hook: "What if parents could get answers without calling?",
+    id: 'legal',
+    name: 'Law Firms',
+    icon: Scale,
+    color: '#A78BFA',
+    description: 'Consultation-driven, high value per client. AI qualifies leads and books consults automatically.',
+    painPoints: ['Wasting time on unqualified leads', 'Intake process manual', 'No follow-up on website inquiries', 'Difficult to track lead sources'],
+    aiUseCases: ['Lead qualification chatbot', 'Intake form automation', 'Consultation booking', 'Case type routing'],
+    avgDealValue: 497,
+    competition: 'High',
+    timeToClose: '4-8 weeks',
+    recommendedPlan: 'Growth Plan',
+    prospectingQuery: 'law firm [city] personal injury OR family law OR estate planning',
+    roiPitch: 'Qualify every lead before you talk to them. Book consultations while you are in court. Track every lead source.',
   },
   {
-    id: "medspa",
-    name: "Med Spas",
-    icon: Sparkles,
-    color: "#A78BFA",
-    painPoints: ["Membership retention", "Appointment gaps and downtime", "Retail product sales", "Client rebooking friction"],
-    talkingPoints: ["Membership auto-renewal and retention campaigns", "Smart booking fills gaps with high-value services", "Retail recommendation engine boosts product sales 20%"],
-    qualifyingQuestions: ["Do you offer membership programs?", "What services have the most downtime?", "How do you drive retail sales?"],
-    recommendedPlan: "Growth ($497/mo)",
-    estimatedDealSize: "$5,964/year",
-    timeToClose: "1-2 weeks",
-    hook: "How much revenue are empty appointment slots costing you?",
+    id: 'realestate',
+    name: 'Real Estate',
+    icon: Home,
+    color: '#4ADE80',
+    description: 'Lead volume is everything. AI captures, nurtures, and qualifies every inquiry instantly.',
+    painPoints: ['Lead response time too slow', 'Too many leads to follow up', 'No systematic nurture', 'Open house lead capture manual'],
+    aiUseCases: ['Instant lead response (< 2 min)', 'Property matching chatbot', 'Open house sign-in automation', 'Buyer/seller nurture campaigns'],
+    avgDealValue: 497,
+    competition: 'High',
+    timeToClose: '2-4 weeks',
+    recommendedPlan: 'Growth Plan',
+    prospectingQuery: 'real estate agent [city] OR realtor [city] team',
+    roiPitch: 'Respond to every lead in under 2 minutes. Nurture every inquiry until they are ready. Never lose a listing lead again.',
   },
   {
-    id: "mentalhealth",
-    name: "Mental Health",
-    icon: Brain,
-    color: "#14B8A6",
-    painPoints: ["High no-show rates for therapy", "Crisis escalation protocols", "Group session management", "Insurance authorization delays"],
-    talkingPoints: ["Gentle reminder sequences reduce no-shows by 35%", "Crisis protocol automation ensures compliance", "Group session booking with waitlist management"],
-    qualifyingQuestions: ["What types of sessions do you offer?", "What's your no-show rate?", "How do you handle crisis situations after hours?"],
-    recommendedPlan: "Starter ($249/mo)",
-    estimatedDealSize: "$2,988/year",
-    timeToClose: "2-3 weeks",
-    hook: "What if every no-show was automatically backfilled?",
+    id: 'insurance',
+    name: 'Insurance Agencies',
+    icon: Shield,
+    color: '#FB923C',
+    description: 'Policy renewal-driven, referral-heavy. AI ensures no policy lapses and drives referrals.',
+    painPoints: ['Policy renewal lapses', 'Referral follow-up inconsistent', 'Quote requests slip through cracks', 'Cross-sell opportunities missed'],
+    aiUseCases: ['Renewal reminder automation', 'Referral request sequences', 'Quote follow-up bot', 'Cross-sell campaign triggers'],
+    avgDealValue: 397,
+    competition: 'Medium',
+    timeToClose: '2-3 weeks',
+    recommendedPlan: 'Starter Plan',
+    prospectingQuery: 'insurance agency [city] independent OR allstate OR state farm',
+    roiPitch: 'Never let a policy lapse. Automate referral asks at the perfect moment. Follow up on every quote request.',
   },
   {
-    id: "urgentcare",
-    name: "Urgent Care",
-    icon: Activity,
-    color: "#EF4444",
-    painPoints: ["Unpredictable walk-in volume", "Long wait times during peaks", "Discharge follow-up gaps", "Online check-in coordination"],
-    talkingPoints: ["Real-time queue management with ETA updates", "Online check-in with symptom triage", "Automated discharge follow-up reduces readmissions"],
-    qualifyingQuestions: ["What's your average daily patient volume?", "How do you communicate wait times?", "Do you offer online check-in?"],
-    recommendedPlan: "Growth ($497/mo)",
-    estimatedDealSize: "$5,964/year",
-    timeToClose: "3-4 weeks",
-    hook: "How long are patients willing to wait before they leave?",
-  },
-  {
-    id: "chiropractic",
-    name: "Chiropractic",
-    icon: Leaf,
-    color: "#22C55E",
-    painPoints: ["Care plan adherence", "Reactivation of inactive patients", "New patient acquisition", "Treatment note documentation"],
-    talkingPoints: ["Care plan tracking with adherence reminders", "Win-back campaigns reactivate 20% of lapsed patients", "New patient nurture sequences improve retention"],
-    qualifyingQuestions: ["What does a typical care plan look like?", "How do you track patient adherence?", "What's your new patient conversion rate?"],
-    recommendedPlan: "Starter ($249/mo)",
-    estimatedDealSize: "$2,988/year",
-    timeToClose: "1-2 weeks",
-    hook: "How many patients start care plans but don't complete them?",
-  },
-  {
-    id: "pharmacy",
-    name: "Pharmacy",
-    icon: Pill,
-    color: "#F97316",
-    painPoints: ["Prescription refill management", "Medication adherence tracking", "Clinical service scheduling", "Insurance coordination"],
-    talkingPoints: ["Automated refill reminders improve adherence", "Clinical service booking for vaccines and consultations", "Insurance copay estimates before pickup"],
-    qualifyingQuestions: ["What clinical services do you offer?", "How do you handle refill reminders?", "What's your biggest operational challenge?"],
-    recommendedPlan: "Starter ($249/mo)",
-    estimatedDealSize: "$2,988/year",
-    timeToClose: "2-3 weeks",
-    hook: "What if patients never missed a refill?",
-  },
-  {
-    id: "pt",
-    name: "Physical Therapy",
-    icon: Activity,
-    color: "#3B82F6",
-    painPoints: ["Plan of care compliance", "Home exercise adherence", "Cancellation and no-shows", "Outcome tracking and reporting"],
-    talkingPoints: ["Plan of care tracking with milestone alerts", "Home exercise video delivery with compliance tracking", "Outcome dashboards for referral source reporting"],
-    qualifyingQuestions: ["How do you track plan of care compliance?", "What percentage of patients complete their full plan?", "How do you report outcomes to referrers?"],
-    recommendedPlan: "Growth ($497/mo)",
-    estimatedDealSize: "$5,964/year",
-    timeToClose: "2-3 weeks",
-    hook: "How many patients drop off before completing their plan of care?",
-  },
-  {
-    id: "vet",
-    name: "Veterinary",
-    icon: ClipboardList,
-    color: "#8B5CF6",
-    painPoints: ["Appointment scheduling complexity", "Vaccination and wellness reminders", "Emergency triage communication", "Client education delivery"],
-    talkingPoints: ["Species-specific wellness reminder sequences", "Emergency triage protocols with automated guidance", "Client education content delivery improves compliance"],
-    qualifyingQuestions: ["What types of animals do you primarily see?", "How do you handle wellness reminders?", "What's your emergency communication process?"],
-    recommendedPlan: "Starter ($249/mo)",
-    estimatedDealSize: "$2,988/year",
-    timeToClose: "1-2 weeks",
-    hook: "What if pet owners never missed a vaccination?",
+    id: 'homeServices',
+    name: 'Home Services',
+    icon: Building2,
+    color: '#22D3EE',
+    description: 'Plumbing, electrical, landscaping, cleaning. High call volume, urgent response needed.',
+    painPoints: ['Missed emergency calls', 'Scheduling chaos', 'Customer communication gaps', 'Seasonal demand swings'],
+    aiUseCases: ['24/7 call answering', 'Smart scheduling', 'Service reminder sequences', 'Seasonal campaign automation'],
+    avgDealValue: 397,
+    competition: 'Low',
+    timeToClose: '1-2 weeks',
+    recommendedPlan: 'Starter Plan',
+    prospectingQuery: 'plumber [city] OR electrician [city] OR landscaping [city]',
+    roiPitch: 'Answer every emergency call. Schedule jobs automatically. Keep customers informed from booking to completion.',
   },
 ];
 
+const container = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.04 } } };
+const item = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: { duration: 0.35 } } };
+
 export default function Markets() {
   const [selectedVertical, setSelectedVertical] = useState<Vertical | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
-
-  const filteredVerticals = verticals.filter(
-    (v) =>
-      v.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      v.painPoints.some((p) => p.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
 
   return (
-    <div className="min-h-screen bg-slate-1 p-6 lg:p-8">
+    <motion.div variants={container} initial="hidden" animate="show" className="space-y-6">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-12 mb-2">Market Verticals</h1>
-        <p className="text-slate-11">Vertical-specific sales guidance and qualification frameworks</p>
-      </div>
+      <motion.div variants={item}>
+        <h1 className="text-[28px] font-bold text-text-primary tracking-[-0.02em]">Market Verticals</h1>
+        <p className="text-sm text-text-secondary mt-0.5">Target industries, pain points, and AI use cases</p>
+      </motion.div>
 
-      {/* Search */}
-      <div className="relative mb-6">
-        <Users className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-10" />
-        <input
-          type="text"
-          placeholder="Search verticals or pain points..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full max-w-md bg-slate-3 border border-slate-6 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-12 placeholder:text-slate-10 focus:outline-none focus:border-blue-9 transition-colors"
-        />
-      </div>
-
-      {/* Verticals Grid */}
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {filteredVerticals.map((vertical, i) => {
-          const Icon = vertical.icon;
+      {/* Vertical Cards Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {verticals.map((v) => {
+          const Icon = v.icon;
           return (
             <motion.button
-              key={vertical.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.05, duration: 0.3 }}
-              onClick={() => setSelectedVertical(vertical)}
-              className="bg-slate-3 border border-slate-6 rounded-xl p-5 text-left hover:border-slate-8 transition-colors group"
+              key={v.id}
+              variants={item}
+              onClick={() => setSelectedVertical(v)}
+              className="bg-surface rounded-xl border border-border-custom p-5 text-left hover:border-border-light transition-all group"
             >
-              <div className="flex items-center gap-3 mb-3">
-                <div
-                  className="w-10 h-10 rounded-lg flex items-center justify-center"
-                  style={{ backgroundColor: `${vertical.color}15` }}
-                >
-                  <Icon className="w-5 h-5" style={{ color: vertical.color }} />
+              <div className="flex items-center justify-between mb-3">
+                <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${v.color}15` }}>
+                  <Icon size={20} style={{ color: v.color }} />
                 </div>
-                <h3 className="text-sm font-semibold text-slate-12">{vertical.name}</h3>
+                <ChevronRight size={16} className="text-text-tertiary group-hover:text-text-primary transition-colors" />
               </div>
-              <div className="space-y-1.5 mb-3">
-                {vertical.painPoints.slice(0, 2).map((point) => (
-                  <p key={point} className="text-xs text-slate-11 truncate">{point}</p>
-                ))}
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-slate-10">{vertical.recommendedPlan}</span>
-                <ChevronRight className="w-4 h-4 text-slate-10 group-hover:text-slate-12 transition-colors" />
+              <h3 className="text-sm font-semibold text-text-primary">{v.name}</h3>
+              <p className="text-xs text-text-secondary mt-1 line-clamp-2">{v.description}</p>
+              <div className="flex items-center gap-3 mt-3 pt-3 border-t border-border-custom">
+                <span className="text-xs font-mono text-soft-neon">${v.avgDealValue}/mo</span>
+                <span className={`text-xs px-1.5 py-0.5 rounded ${v.competition === 'Low' ? 'bg-[#4ADE80]/10 text-[#4ADE80]' : v.competition === 'Medium' ? 'bg-[#FACC15]/10 text-[#FACC15]' : 'bg-[#F87171]/10 text-[#F87171]'}`}>
+                  {v.competition} competition
+                </span>
               </div>
             </motion.button>
           );
@@ -264,114 +205,121 @@ export default function Markets() {
       {/* Detail Drawer */}
       <AnimatePresence>
         {selectedVertical && (
-          <>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/60 z-50 flex justify-end"
+            onClick={() => setSelectedVertical(null)}
+          >
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
-              onClick={() => setSelectedVertical(null)}
-            />
-            <motion.div
-              initial={{ x: "100%" }}
+              initial={{ x: 400 }}
               animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={{ type: "spring", damping: 30, stiffness: 300 }}
-              className="fixed right-0 top-0 bottom-0 w-full max-w-lg bg-slate-2 border-l border-slate-6 z-50 overflow-y-auto"
+              exit={{ x: 400 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="w-full max-w-lg bg-surface border-l border-border-custom h-full overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
             >
-              {/* Drawer Header */}
-              <div className="sticky top-0 bg-slate-2/95 backdrop-blur-sm border-b border-slate-6 px-6 py-4 flex items-center justify-between z-10">
+              {/* Header */}
+              <div className="p-6 border-b border-border-custom">
+                <div className="flex items-center justify-between mb-4">
+                  <button onClick={() => setSelectedVertical(null)} className="text-sm text-text-secondary hover:text-text-primary transition-colors flex items-center gap-1">
+                    <ChevronRight size={16} className="rotate-180" /> Back
+                  </button>
+                </div>
                 <div className="flex items-center gap-3">
-                  <div
-                    className="w-10 h-10 rounded-lg flex items-center justify-center"
-                    style={{ backgroundColor: `${selectedVertical.color}15` }}
-                  >
-                    <selectedVertical.icon className="w-5 h-5" style={{ color: selectedVertical.color }} />
+                  <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ backgroundColor: `${selectedVertical.color}15` }}>
+                    <selectedVertical.icon size={24} style={{ color: selectedVertical.color }} />
                   </div>
                   <div>
-                    <h2 className="text-lg font-bold text-slate-12">{selectedVertical.name}</h2>
-                    <p className="text-xs text-slate-11">{selectedVertical.recommendedPlan}</p>
+                    <h2 className="text-xl font-bold text-text-primary">{selectedVertical.name}</h2>
+                    <p className="text-sm text-text-secondary">{selectedVertical.description}</p>
                   </div>
                 </div>
-                <button
-                  onClick={() => setSelectedVertical(null)}
-                  className="p-2 rounded-lg hover:bg-slate-4 transition-colors"
-                >
-                  <X className="w-5 h-5 text-slate-11" />
-                </button>
               </div>
 
               <div className="p-6 space-y-6">
-                {/* Hook */}
-                <div className="bg-blue-9/10 border border-blue-9/20 rounded-xl p-4">
-                  <p className="text-sm font-medium text-blue-11">Opening Hook</p>
-                  <p className="text-sm text-slate-12 mt-1 italic">"{selectedVertical.hook}"</p>
-                </div>
-
-                {/* Deal Stats */}
+                {/* Key Stats */}
                 <div className="grid grid-cols-3 gap-3">
-                  <div className="bg-slate-3 border border-slate-6 rounded-lg p-3 text-center">
-                    <TrendingUp className="w-4 h-4 text-slate-11 mx-auto mb-1" />
-                    <p className="text-xs text-slate-11">Deal Size</p>
-                    <p className="text-sm font-semibold text-slate-12">{selectedVertical.estimatedDealSize}</p>
+                  <div className="p-3 bg-surface-elevated rounded-lg border border-border-custom text-center">
+                    <DollarSign size={16} className="text-soft-neon mx-auto mb-1" />
+                    <p className="text-lg font-bold font-mono text-text-primary">${selectedVertical.avgDealValue}</p>
+                    <p className="text-[10px] text-text-secondary">per month</p>
                   </div>
-                  <div className="bg-slate-3 border border-slate-6 rounded-lg p-3 text-center">
-                    <Target className="w-4 h-4 text-slate-11 mx-auto mb-1" />
-                    <p className="text-xs text-slate-11">Close Time</p>
-                    <p className="text-sm font-semibold text-slate-12">{selectedVertical.timeToClose}</p>
+                  <div className="p-3 bg-surface-elevated rounded-lg border border-border-custom text-center">
+                    <Target size={16} className="text-primary-blue mx-auto mb-1" />
+                    <p className="text-lg font-bold text-text-primary">{selectedVertical.competition}</p>
+                    <p className="text-[10px] text-text-secondary">competition</p>
                   </div>
-                  <div className="bg-slate-3 border border-slate-6 rounded-lg p-3 text-center">
-                    <Users className="w-4 h-4 text-slate-11 mx-auto mb-1" />
-                    <p className="text-xs text-slate-11">Plan</p>
-                    <p className="text-sm font-semibold text-slate-12">{selectedVertical.recommendedPlan.split(" (")[0]}</p>
+                  <div className="p-3 bg-surface-elevated rounded-lg border border-border-custom text-center">
+                    <TrendingUp size={16} className="text-success mx-auto mb-1" />
+                    <p className="text-lg font-bold text-text-primary">{selectedVertical.timeToClose}</p>
+                    <p className="text-[10px] text-text-secondary">avg close time</p>
                   </div>
                 </div>
 
                 {/* Pain Points */}
                 <div>
-                  <h3 className="text-sm font-semibold text-slate-12 mb-3">Pain Points</h3>
+                  <h3 className="text-sm font-semibold text-text-primary mb-3 flex items-center gap-2">
+                    <AlertCircle size={16} className="text-[#F87171]" />
+                    Key Pain Points
+                  </h3>
                   <div className="space-y-2">
-                    {selectedVertical.painPoints.map((point) => (
-                      <div key={point} className="flex items-start gap-2 bg-slate-3 rounded-lg p-3">
-                        <div className="w-1.5 h-1.5 rounded-full bg-red-9 mt-1.5 flex-shrink-0" />
-                        <p className="text-sm text-slate-11">{point}</p>
+                    {selectedVertical.painPoints.map((p, i) => (
+                      <div key={i} className="flex items-start gap-2.5 p-3 bg-surface-elevated rounded-lg border border-border-custom">
+                        <span className="w-5 h-5 rounded-full bg-[#F87171]/10 text-[#F87171] text-xs flex items-center justify-center shrink-0 mt-0.5">{i + 1}</span>
+                        <span className="text-sm text-[#B8C8E0]">{p}</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                {/* Talking Points */}
+                {/* AI Use Cases */}
                 <div>
-                  <h3 className="text-sm font-semibold text-slate-12 mb-3">Sales Talking Points</h3>
+                  <h3 className="text-sm font-semibold text-text-primary mb-3 flex items-center gap-2">
+                    <CheckCircle2 size={16} className="text-success" />
+                    AI Use Cases
+                  </h3>
                   <div className="space-y-2">
-                    {selectedVertical.talkingPoints.map((point) => (
-                      <div key={point} className="flex items-start gap-2 bg-slate-3 border border-green-9/20 rounded-lg p-3">
-                        <TrendingUp className="w-4 h-4 text-green-10 flex-shrink-0 mt-0.5" />
-                        <p className="text-sm text-slate-11">{point}</p>
+                    {selectedVertical.aiUseCases.map((u, i) => (
+                      <div key={i} className="flex items-start gap-2.5 p-3 bg-surface-elevated rounded-lg border border-border-custom">
+                        <span className="w-5 h-5 rounded-full bg-[#4ADE80]/10 text-[#4ADE80] text-xs flex items-center justify-center shrink-0 mt-0.5">{i + 1}</span>
+                        <span className="text-sm text-[#B8C8E0]">{u}</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                {/* Qualifying Questions */}
+                {/* ROI Pitch */}
+                <div className="p-4 bg-[#0C2D5A]/30 rounded-xl border border-[#1A6FD4]/30">
+                  <h3 className="text-sm font-semibold text-text-primary mb-2 flex items-center gap-2">
+                    <TrendingUp size={16} className="text-soft-neon" />
+                    ROI Pitch
+                  </h3>
+                  <p className="text-sm text-[#B8C8E0] leading-relaxed">{selectedVertical.roiPitch}</p>
+                </div>
+
+                {/* Prospecting Query */}
                 <div>
-                  <h3 className="text-sm font-semibold text-slate-12 mb-3">Qualifying Questions</h3>
-                  <div className="space-y-2">
-                    {selectedVertical.qualifyingQuestions.map((q, i) => (
-                      <div key={q} className="flex items-start gap-3 bg-slate-3 rounded-lg p-3">
-                        <span className="text-xs font-bold text-blue-11 bg-blue-9/10 w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0">
-                          {i + 1}
-                        </span>
-                        <p className="text-sm text-slate-11">{q}</p>
-                      </div>
-                    ))}
+                  <h3 className="text-sm font-semibold text-text-primary mb-2 flex items-center gap-2">
+                    <Users size={16} className="text-soft-neon" />
+                    Prospecting Query
+                  </h3>
+                  <div className="p-3 bg-surface-elevated rounded-lg border border-border-custom">
+                    <p className="text-sm font-mono text-soft-neon">{selectedVertical.prospectingQuery}</p>
                   </div>
+                </div>
+
+                {/* Recommended Plan */}
+                <div className="p-4 bg-surface-elevated rounded-xl border border-border-custom">
+                  <h3 className="text-sm font-semibold text-text-primary mb-1">Recommended Plan</h3>
+                  <p className="text-sm text-soft-neon font-medium">{selectedVertical.recommendedPlan}</p>
                 </div>
               </div>
             </motion.div>
-          </>
+          </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </motion.div>
   );
 }
